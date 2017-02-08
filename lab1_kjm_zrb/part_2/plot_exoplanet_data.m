@@ -1,6 +1,6 @@
-time_values = 1:500;
-amplitude = 100;
-period = 100;
+time_values = 1:365;
+amplitude = 40;
+period = 67;
 error = 0.2;
 
 clf
