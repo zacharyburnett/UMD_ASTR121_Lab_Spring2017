@@ -1,6 +1,6 @@
 time_values = 1:500;
 amplitude = 100;
-period = 500;
+period = 100;
 error = 0.2;
 
 clf
