@@ -5,5 +5,8 @@
 num_wavelengths = 100000;
 wavelengths = random('uniform', 1e-10, 1.5e-6, 1, num_wavelengths);
 
-main_sequence = xlsread('main_sequence.csv');
+% read spectral type characteristics, from:
+% https://sites.uni.edu/morgans/astro/course/Notes/section2/spectraltemps.html
+spectral_types = readtable('spectral_types.csv', 'Format', '%C%n%n%C');
 
+spectral_types('A0',:)
