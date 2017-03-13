@@ -9,4 +9,4 @@ wavelengths = random('uniform', 1e-10, 1.5e-6, 1, num_wavelengths);
 % https://sites.uni.edu/morgans/astro/course/Notes/section2/spectraltemps.html
 spectral_types = readtable('spectral_types.csv', 'Format', '%C%n%n%C');
 
-spectral_types('A0',:)
+plot(wavelengths, blackbody_intensity(wavelenghts, spectral_types(16, 'temperature')))
