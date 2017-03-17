@@ -21,4 +21,8 @@ write.csv(residual_sumsquares,
 
 # print final results
 for (current_unknown_spectra in colnames(unknown_spectra))
-  print(paste(current_unknown_spectra, residual_sumsquares$spectral_type[residual_sumsquares[[current_unknown_spectra]] == min(residual_sumsquares[[current_unknown_spectra]])], min(residual_sumsquares[[current_unknown_spectra]])))
+  print(paste(
+    current_unknown_spectra,
+    residual_sumsquares$spectral_type[residual_sumsquares[[current_unknown_spectra]] == min(residual_sumsquares[[current_unknown_spectra]])],
+    min(residual_sumsquares[[current_unknown_spectra]])
+  ))
