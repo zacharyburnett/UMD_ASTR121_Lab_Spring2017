@@ -6,7 +6,6 @@ B0_normalized_theory = B0_theory / max(B0_theory);
 
 hold on
 
-% convert Angstroms to meters
 plot(B0_data.wavelength_A, B0_data.normalized_intensity, '-');
 plot(B0_data.wavelength_A, B0_normalized_theory, '--');
 
