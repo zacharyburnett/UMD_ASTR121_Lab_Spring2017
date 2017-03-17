@@ -12,5 +12,7 @@ plot(unknown_spectra.wavelength_A, residuals.a1, '--');
 
 legend('o5', 'a1');
 title('Unknown Spectra 1 residuals compared to O5 and A1 Spectra');
+xlabel('Wavelength (Angstroms)');
+ylabel('Normalized Intensity');
 
 hold off

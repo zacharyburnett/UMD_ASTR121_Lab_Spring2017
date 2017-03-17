@@ -25,5 +25,7 @@ plot(wavelengths, M0_theory, '.-');
 
 legend('A0', 'G2', 'M0');
 title('Plancks Law of A0, G2, and M0 stellar spectra over 200 wavelengths');
+xlabel('Wavelength (meters)');
+ylabel('Normalized Intensity');
 
 hold off

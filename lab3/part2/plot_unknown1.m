@@ -10,5 +10,7 @@ plot(known_spectra.wavelength_A, known_spectra.a1, '-');
 
 legend('unknown1', 'o5', 'a1');
 title('Unknown Spectra 1 vs O5 and A1 Spectra');
+xlabel('Wavelength (Angstroms)');
+ylabel('Normalized Intensity');
 
 hold off
