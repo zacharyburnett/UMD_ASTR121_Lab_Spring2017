@@ -1,0 +1,6 @@
+unknown_spectra,spectral_type_match,sum_of_squares
+unknown1,o5,0.26382793
+unknown2,m0,1.41510185
+unknown3,g0,2.91191664
+unknown4,a1,1.71798673
+unknown5,k5,3.59489801
