@@ -4,9 +4,10 @@ known_spectra <-
 unknown_spectra <-
   read.csv("spectra/unknown_spectra.csv", row.names = "wavelength_A")
 
-# instantiate data frame with known spectral types as row names
+# instantiate data frames
 residual_sumsquares <-
   data.frame(spectral_type = colnames(known_spectra))
+
 
 # populate data frame of residual sum of squares
 for (current_unknown_spectra in colnames(unknown_spectra))
