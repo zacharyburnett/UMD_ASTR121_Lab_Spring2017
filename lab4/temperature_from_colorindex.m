@@ -1,13 +1,13 @@
-function [ temperature ] = temperature_from_colorindex( color_index, method )
+function [ temperature ] = temperature_from_colorindex( color_index, formula )
 %TEMPERATURE_FROM_COLORINDEX Returns temperature given a color index (B - V)
 
 % if second argument is not given, default to Method 1 (Wikipedia method)
 if nargin < 2
-  method = 1;
+  formula = 1;
 end
 
 % get temperature from given method
-if method == 1
+if formula == 1
   % formula from Wikipedia
   temperature = 4600 * (1 / (0.92 * (color_index) + 1.7) + 1 / (0.92 * (color_index) + 0.62));
 
