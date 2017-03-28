@@ -1,17 +1,17 @@
-% formula from
-% http://www.astro.sunysb.edu/fwalter/AST443/b-v_temp.html
-%temperature = 8540 / (color_index + 0.865);
-
+% define color indices
 color_indices = [0.5, 1.8, -0.03];
 
+% generate array of wavelengths in nm
 num_wavelengths = 1000;
-
 wavelengths_nm = linspace(100, 800, num_wavelengths);
 
+% get temperatures from color indices
 temperatures = temperature_from_colorindex(color_indices);
 
+% instantiate array of normalized intensities
 normalized_intensities = array2table(zeros(num_wavelengths, 3));
 
+% populate array with normalized intensities
 for index = 1:length(temperatures)
     current_intensities = blackbody_intensity(wavelengths_nm * 1e-9, temperatures(index));
     normalized_intensities{:, index} = reshape(current_intensities ./ max(current_intensities), [1000 1]);
@@ -44,6 +44,8 @@ title('Normalized Planck Intenisites vs Wavelength (nm) with B and V Filter Regi
 xlabel('Wavelength');
 ylabel('Intensity');
 
+% add legend
 legend('Visual Region', 'Blue Region', 'Color Index -0.03', 'Color Index 1.8', 'Color Index 0.5');
 
+% end plotting
 hold off
