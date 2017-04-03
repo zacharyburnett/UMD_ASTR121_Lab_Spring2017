@@ -9,7 +9,7 @@ end
 % get temperature from given method
 if formula == 1
   % formula from Wikipedia
-  temperature = 4600 * (1 / (0.92 * (color_index) + 1.7) + 1 / (0.92 * (color_index) + 0.62));
+  temperature = 4600 * (1 ./ (0.92 * (color_index) + 1.7) + 1 ./ (0.92 * (color_index) + 0.62));
 
 else
   % formula from http://www.astro.sunysb.edu/fwalter/AST443/b-v_temp.html
