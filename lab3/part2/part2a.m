@@ -7,17 +7,17 @@ spectral_standards = array2table(zeros(0,14), 'VariableNames', {'wavelength_A', 
 
 for spectral_type in spectral_types:
     spectral_standards(spectral_type) = readtable(spectral_type + '.txt', 'ReadVariableNames', true).normalized_wavelength;
-
-hold on
-
-% convert Angstroms to meters
-plot(unknown1_data.wavelength_A, unknown1_data.normalized_intensity, '--');
-for spectral_type in spectral_types:
-    plot(spectral_standards.wavelength_A, spectral_standards[[spectral_type]], '-');
-
-legend(spectral_types);
-title('All spectral standards, compared to Unknown Spectra 1');
-xlabel('Wavelength (Angstroms)');
-ylabel('Normalized Intensity');
-
-hold off
+    
+    hold on
+    
+    % convert Angstroms to meters
+    plot(unknown1_data.wavelength_A, unknown1_data.normalized_intensity, '--');
+    for spectral_type in spectral_types:
+        plot(spectral_standards.wavelength_A, spectral_standards[[spectral_type]], '-');
+        
+        legend(spectral_types);
+        title('All spectral standards, compared to Unknown Spectra 1');
+        xlabel('Wavelength (Angstroms)');
+        ylabel('Normalized Intensity');
+        
+        hold off
