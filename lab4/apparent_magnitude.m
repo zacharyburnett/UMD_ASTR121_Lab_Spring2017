@@ -4,4 +4,3 @@ function [ apparent_magnitude ] = apparent_magnitude( absolute_magnitude , dista
     
     apparent_magnitude = absolute_magnitude + 5 * log(distance) / log(10) - 5;
 end
-

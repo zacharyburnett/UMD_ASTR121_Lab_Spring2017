@@ -16,8 +16,8 @@ function [ visual_isochrone_name, blue_isochrone_name ] = closest_isochrone( clu
         residual_sumsquares{2, index} = nansum((cluster_magnitudes.V - blue_mag').^2);
     end
     
+    % find isochrones closest to the visual and blue magnitudes based on
+    % sum of squares
     visual_isochrone_name = residual_sumsquares('visual', residual_sumsquares{'visual',:} == min(residual_sumsquares{'visual',:})).Properties.VariableNames;
     blue_isochrone_name = residual_sumsquares('blue', residual_sumsquares{'blue',:} == min(residual_sumsquares{'blue',:})).Properties.VariableNames;
-    
 end
-
