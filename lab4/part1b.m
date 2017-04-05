@@ -1,3 +1,6 @@
+% read in data for star cluster M45
+m45 = readtable('m45.txt', 'ReadVariableNames', true);
+
 % define color indices
 color_indices = [0.5, 1.8, -0.03];
 

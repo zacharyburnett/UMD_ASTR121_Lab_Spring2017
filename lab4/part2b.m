@@ -1,14 +1,23 @@
+% read in data for star cluster M45
 m45 = readtable('m45.txt', 'ReadVariableNames', true);
+
+% load isochrones
+load isochrones.mat
+
+% get fieldnames for e8 and e9
+e8_fields = fieldnames(isoc.e8);
+e9_fields = fieldnames(isoc.e9);
 
 distance = 130;
 
+for index = 1:numel(e8_fields)
+    isochrone = isoc.e8.(e8_fields{index});
+    
+end
 hold on;
 
 % flip axes
 set(gca, 'ydir', 'rev');
-
-e8_fields = fieldnames(isoc.e8);
-e9_fields = fieldnames(isoc.e9);
 
 % plot isochrones with apparent magnitude
 for index = 1:numel(e8_fields)

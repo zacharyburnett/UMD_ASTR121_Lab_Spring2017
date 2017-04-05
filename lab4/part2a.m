@@ -1,4 +1,8 @@
-%load isochrones.mat
+% read in data for star cluster M45
+m45 = readtable('m45.txt', 'ReadVariableNames', true);
+
+% load isochrones
+load isochrones.mat
 
 color_index_5e9 = isoc.e9.five.B - isoc.e9.five.V;
 color_index_95e9 = isoc.e9.ninept5.B - isoc.e9.ninept5.V;
