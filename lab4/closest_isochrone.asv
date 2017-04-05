@@ -1,0 +1,28 @@
+function [ isochrone_name ] = closest_isochrone( cluster_magnitudes, isochrones, filter )
+%CLOSEST_ISOCHRONE Returns name of closest isochrone given cluster 
+%magnitudes and isochrone struct
+
+if nargin < 3
+    filter = 'visual';
+end
+
+% get field names of isochrone struct
+fields = fieldnames(isochrones);
+
+% create table of 0s to store sumsquares
+residual_sumsquares = array2table(zeros(1, length(fields)), 'VariableNames', fields);
+
+for index = 1:numel(fields)
+    current_isochrone = isochrones.(fields{index});
+    
+    if filter == 'visual'
+        magnitude = interp1(current_isochrone.V, 1:length(cluster_magnitudes.V), 'spline');
+    blue_mag = interp1(current_isochrone.B, 1:length(cluster_magnitudes.B), 'spline');
+    residual_sumsquares{1, index} = nansum((cluster_magnitudes.V - visual_mag').^2);
+end
+
+ = residual_sumsquares(1, residual_sumsquares{1, :} == min(residual_sumsquares{1, :})).Properties.VariableNames;
+blue_minsumsquares = residual_sumsquares('blue', residual_sumsquares{'blue',:} == min(residual_sumsquares{'blue',:})).Properties.VariableNames;
+
+end
+

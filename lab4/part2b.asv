@@ -10,7 +10,10 @@ e9_fields = fieldnames(isoc.e9);
 
 distance = 130;
 
-best_fit_isochrone = closest_isochrone(m45, isoc.e8);
+%for index = 1:numel(e8_fields)
+%    isochrone = isoc.e8.(e8_fields{index});
+%    
+%end
 
 hold on;
 
@@ -20,9 +23,8 @@ set(gca, 'ydir', 'rev');
 % plot isochrones with apparent magnitude
 for index = 1:numel(e8_fields)
     isochrone = isoc.e8.(e8_fields{index});
-    visual_mag = interp1(isochrone.V, 1:length(m45.V));
-    blue_mag = interp1(isochrone.B, 1:length(m45.B));
-    plot(blue_mag - visual_mag, apparent_magnitude(visual_mag, distance), '.');
+    visual_mag = interp1(isochrone.V, m45.V)
+    plot(isochrone.B - isochrone.V, apparent_magnitude(isochrone.V, distance), '-');
 end
 
 %for index = 1:numel(e9_fields)
