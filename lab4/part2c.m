@@ -5,7 +5,8 @@ m45 = readtable('m45.txt', 'ReadVariableNames', true);
 load isochrones.mat
 
 % get best fit isochrone
-best_fit_isochrone = isoc.e8.(cell2mat(closest_isochrone(m45, isoc.e8)));
+residual_sumsquares = closest_isochrone(m45, isoc.e8);
+best_fit_isochrone = isoc.e8.(cell2mat(residual_sumsquares('visual', residual_sumsquares{'visual',:} == min(residual_sumsquares{'visual',:})).Properties.VariableNames));
 
 % get distance
 distance = 136.2;
@@ -26,6 +27,6 @@ title('Color Index vs Visual Apparent Magnitude');
 xlabel('Color Index (B - V)');
 ylabel('Visual Magnitude (V)');
 
-legend(strcat(closest_isochrone(m45, isoc.e8), ' 10^8'), 'M45')
+legend(strcat(cell2mat(residual_sumsquares('visual', residual_sumsquares{'visual',:} == min(residual_sumsquares{'visual',:})).Properties.VariableNames), ' 10^8'), 'M45')
 
 hold off;
