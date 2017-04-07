@@ -22,6 +22,11 @@ for current_distance = distances
     plot(iso_blue - iso_visu, apparent_magnitude(iso_visu, current_distance), '-');
 end
 
+% add labels
+title('M67 and 4*10^9 year Isochrone with Distance Candidates');
+xlabel('Color Index (B - V)');
+ylabel('Visual Magnitude (V)');
+
 legend(['m67', strcat(string(distances), ' pc')]);
 
 hold off
