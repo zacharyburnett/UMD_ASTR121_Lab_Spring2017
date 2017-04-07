@@ -1,4 +1,4 @@
-% read in data for star cluster M45
+% read in data for star cluster M67
 m67 = readtable('m67.txt', 'ReadVariableNames', true);
 
 % load isochrones
@@ -9,7 +9,7 @@ load isochrones.mat
 e9_fields = fieldnames(isoc.e9);
 
 % get distance
-distance = 700;
+distance = 827;
 
 hold on;
 

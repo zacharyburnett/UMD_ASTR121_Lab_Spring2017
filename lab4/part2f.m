@@ -1,4 +1,4 @@
-% read in data for star cluster M45
+% read in data for star cluster M67
 m67 = readtable('m67.txt', 'ReadVariableNames', true);
 
 % load isochrones
