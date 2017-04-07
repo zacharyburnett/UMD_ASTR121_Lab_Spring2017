@@ -1,14 +1,14 @@
 % read in data for star cluster M45
-m45 = readtable('m45.txt', 'ReadVariableNames', true);
+m67 = readtable('m67.txt', 'ReadVariableNames', true);
 
 % load isochrones
 load isochrones.mat
 
 % get best fit isochrone
-best_fit_isochrone = isoc.e8.(closest_isochrone(m45, isoc.e8));
+best_fit_isochrone = isoc.e9.four;%(closest_isochrone(m67, isoc.e9));
 
 % get distance
-distance = 136.2;
+distance = 800;
 
 hold on;
 
@@ -16,7 +16,7 @@ hold on;
 set(gca, 'ydir', 'rev');
 
 % plot m45 data (already in apparent magnitude)
-plot(m45.B - m45.V, m45.V, '.k');
+plot(m67.B - m67.V, m67.V, '.k');
 
 % plot isochrones with apparent magnitude
 plot(best_fit_isochrone.B - best_fit_isochrone.V, apparent_magnitude(best_fit_isochrone.V, distance), '-')
@@ -32,7 +32,7 @@ plot(best_fit_isochrone.B - best_fit_isochrone.V, apparent_magnitude(best_fit_is
 xlabel('Color Index (B - V)');
 ylabel('Visual Magnitude (V)');
 
-legend('m45', closest_isochrone(m45, isoc.e8));
+legend('m67', closest_isochrone(m67, isoc.e9));
 
 %legend(['m45', string(distances)]);
 
