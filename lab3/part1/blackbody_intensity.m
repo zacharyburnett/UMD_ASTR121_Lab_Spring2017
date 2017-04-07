@@ -8,4 +8,3 @@ function [ intensities ] = blackbody_intensity( wavelengths, temperature )
     
     intensities = ( 2 * planck_constant * speed_of_light^2 ) ./ ( wavelengths.^5 .* ( exp(( planck_constant * speed_of_light ) ./ ( wavelengths .* boltzmann_constant * temperature )) - 1 ));
 end
-

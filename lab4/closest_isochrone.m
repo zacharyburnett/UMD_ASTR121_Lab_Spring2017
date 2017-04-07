@@ -1,4 +1,4 @@
-function [ visual_isochrone_name, blue_isochrone_name ] = closest_isochrone( cluster_magnitudes, isochrones )
+function [ visual_isochrone ] = closest_isochrone( cluster_magnitudes, isochrones )
     %CLOSEST_ISOCHRONE Returns name of closest isochrone given cluster
     %magnitudes and isochrone struct
     
@@ -10,14 +10,19 @@ function [ visual_isochrone_name, blue_isochrone_name ] = closest_isochrone( clu
     
     for index = 1:numel(fields)
         current_isochrone = isochrones.(fields{index});
-        visual_mag = interp1(current_isochrone.V, 1:length(cluster_magnitudes.V), 'spline');
-        blue_mag = interp1(current_isochrone.B, 1:length(cluster_magnitudes.B), 'spline');
-        residual_sumsquares{1, index} = nansum((cluster_magnitudes.V - visual_mag').^2);
-        residual_sumsquares{2, index} = nansum((cluster_magnitudes.V - blue_mag').^2);
+        
+        vis_mag = current_isochrone.V;%(1:find(diff(current_isochrone.V) >= 0, 1));
+        %blu_mag = current_isochrone.B;%(1:find(diff(current_isochrone.V) >= 0, 1));
+        
+        vis_inter = interp1(vis_mag, linspace(1, length(vis_mag), length(cluster_magnitudes.V)), 'spline')';
+        %vis_inter = interp1(vis_mag, 1:length(cluster_magnitudes.V), 'spline')';
+        %blu_inter = interp1(blu_mag, linspace(1, length(blu_mag), length(cluster_magnitudes.V)), 'spline')';
+
+        residual_sumsquares{1, index} = nansum((cluster_magnitudes.V - vis_inter).^2);
+        %residual_sumsquares{2, index} = nansum((cluster_magnitudes.B - blu_inter).^2);
     end
     
-    visual_isochrone_name = residual_sumsquares('visual', residual_sumsquares{'visual',:} == min(residual_sumsquares{'visual',:})).Properties.VariableNames;
-    blue_isochrone_name = residual_sumsquares('blue', residual_sumsquares{'blue',:} == min(residual_sumsquares{'blue',:})).Properties.VariableNames;
+    %disp(residual_sumsquares);
     
+    visual_isochrone = cell2mat(residual_sumsquares('visual', residual_sumsquares{'visual',:} == min(residual_sumsquares{'visual',:})).Properties.VariableNames);
 end
-
