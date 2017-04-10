@@ -13,7 +13,7 @@ galactic_radius = 15 * kiloparsec_meters;
 radii = linspace(0, galactic_radius, 1000);
 
 % get velocities
-velocities_m_s = galactic_rotational_velocity(radii, galactic_mass * (radii.^2 / galactic_radius^2));
+velocities_m_s = galactic_rotational_velocity(radii, galactic_mass * (radii.^3 / galactic_radius));
 
 % start plotting
 hold on
