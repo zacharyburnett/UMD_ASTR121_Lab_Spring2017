@@ -1,5 +1,5 @@
-% define meters in a kiloparsec
-kiloparsec_meters = 3.086e19; % wikipedia
+% point source (constant mass)
+
 
 % define mass of galaxy
 galactic_mass = 5.8e11 * 1.989e30; % Vayntrub, Alina (2000). "Mass of the Milky Way". The Physics Factbook. Archived from the original on August 13, 2014. Retrieved May 9, 2007.4
