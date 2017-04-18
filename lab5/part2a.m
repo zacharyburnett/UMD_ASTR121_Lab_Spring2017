@@ -20,7 +20,7 @@ hold on
 plot(lon17.Var1, lon17.Var2, 'b.');
 %plot(lon17.Var1, noise_adjusted, 'b-');
 
-%line([lon17_start_frequency lon17_start_frequency], get(gca, 'YLim'), 'Color', 'b');
+line([lon17_start_frequency lon17_start_frequency], get(gca, 'YLim'), 'Color', 'b');
 line(get(gca, 'XLim'), [0 0], 'Color', 'b');
 
 % add labels
