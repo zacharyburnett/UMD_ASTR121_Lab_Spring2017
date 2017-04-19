@@ -44,13 +44,6 @@ end
 
 %%
 
-% plot vertical lines at likely start of signal
-for index = 1:length(data)
-    line([left_tail_start_frequencies(index) left_tail_start_frequencies(index)], get(gca, 'YLim'), 'color', colors(index, :));
-end
-
-%%
-
 % v = (femit - fobs) / fobs * c
 tangential_velocities = (emitted_frequency * 1000 - (left_tail_start_frequencies * 1000)) ./ (left_tail_start_frequencies * 1000) * speed_of_light;
 
@@ -80,6 +73,13 @@ for index = 1:length(data)
     plot(current_table.Var1, current_table.Var2, '.', 'color', colors(index, :));
 end
 
+% plot vertical lines at likely start of signal
+for index = 1:length(data)
+    line([left_tail_start_frequencies(index) left_tail_start_frequencies(index)], get(gca, 'YLim'), 'color', colors(index, :));
+end
+
+refline(0, 0);
+
 % add labels
 title('Brightness Temperature vs Frequency for 17:4:65 deg Galactic Longitude');
 xlabel('Frequency (MHz)');
@@ -87,8 +87,6 @@ ylabel('Brightness Temperature (K)');
 
 % add legend
 legend(filenames);
-
-refline(0, 0);
 
 hold off;
 
