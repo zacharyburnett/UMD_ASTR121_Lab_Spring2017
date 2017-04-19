@@ -24,7 +24,7 @@ plot(outer_radii / kiloparsec_meters, galactic_rotational_velocity(outer_radii, 
 
 % add labels
 title('Rotational Velocity vs Orbital Radius: Spherical Mass of Radius 2 kpc');
-xlabel('Radius (kpc)');
-ylabel('Velocity (km/s)');
+xlabel('Orbital Radius (kpc)');
+ylabel('Orbital Velocity (km/s)');
 
 hold off

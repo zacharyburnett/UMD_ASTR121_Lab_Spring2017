@@ -24,8 +24,8 @@ plot(radii / kiloparsec_meters, galactic_rotational_velocity(radii, galactic_mas
 
 % add labels
 title('Rotational Velocity vs Orbital Radius: Mass Proportionalities');
-xlabel('Radius (kpc)');
-ylabel('Velocity (km/s)');
+xlabel('Orbital Radius (kpc)');
+ylabel('Orbital Velocity (km/s)');
 
 % add legend
 legend('point mass', 'proportional to radius', 'proportional to radius cubed');
