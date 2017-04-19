@@ -27,6 +27,9 @@ title('Rotational Velocity vs Orbital Radius: Mass Proportionalities');
 xlabel('Orbital Radius (kpc)');
 ylabel('Orbital Velocity (km/s)');
 
+% set y axis limits
+ylim([0, 2000]);
+
 % add legend
 legend('point mass', 'proportional to radius', 'proportional to radius cubed');
 
