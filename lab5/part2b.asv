@@ -9,7 +9,6 @@ kiloparsec_meters = 3.086e+19;
 
 speed_of_light = 299792458; % meters per second
 emitted_frequency = 1420.406; % MHz
-emitted_frequency_uncertainty = 1; %need to decide on this
 
 sun_orbital_speed = 220000; % meters per second
 sun_orbital_radius = 7.4 * kiloparsec_meters; % meters
@@ -66,17 +65,15 @@ orbital_velocities = sun_orbital_speed * sin(deg2rad(17:4:65)) + tangential_velo
 %For this, you have found the partial derivative for theta (and included
 %the tan_vel instead of treating it as a constant) but multiplied is by the
 %uncertant in the tan_vel. Also, in the second term you have not found the
-%derivative of sine. The fix:
-orbital_velocities_uncertainties = sqrt(tangential_velocities_uncertainties.^2 + (sun_orbital_speed * cos(deg2rad(17:4:65))).^2 .* deg2rad(galactic_longitude_uncertainties).^2);
+%derivative of sin, and 
 
 
 % calculate orbital radii using distance from Sun to center of Milky Way
 orbital_radii = sun_orbital_radius * sin(deg2rad(17:4:65));
 
 % error propagation
-orbital_radii_uncertainties = sqrt((sin(deg2rad(17:4:65))).^2 * (sun_orbital_radius_uncertainty)^2 + (sun_orbital_radius * cos(deg2rad(17:4:65))).^2 * deg2rad(galactic_longitude_uncertainties).^2);
-%the error prop for this looked correct, I only added the "deg2rad"
-%function on the cosine and gal_long uncertainty
+orbital_radii_uncertainties = sqrt((sin(deg2rad(17:4:65))).^2 * (sun_orbital_radius_uncertainty)^2 + (sun_orbital_radius * cos(17:4:65)).^2 * (galactic_longitude_uncertainties).^2);
+
 %%
 
 hold on;
