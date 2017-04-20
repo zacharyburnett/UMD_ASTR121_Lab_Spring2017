@@ -135,3 +135,37 @@ ylabel('Orbital Velocity (km/s)');
 legend('HI Clouds', 'Sun');
 
 hold off;
+%%
+norm_OrbVel = max(orbital_velocities/1000);
+norm_TheorVelInner = max(galactic_rotational_velocity(inner_radii, galactic_mass * (inner_radii / max(inner_radii)).^3) / 1000);
+norm_TheorVelOuter = max(galactic_rotational_velocity(outer_radii, galactic_mass) / 1000);
+%Replot the curves, but normalized
+figure 
+hold on;
+
+% plot calculated positions
+plot(orbital_radii / kiloparsec_meters, (orbital_velocities / 1000)./norm_OrbVel, 'x');
+
+% add point for Sun
+plot(sun_orbital_radius / kiloparsec_meters, (sun_orbital_speed / 1000)./norm_OrbVel, 'o');
+
+%add error bars
+errorbar(orbital_radii / kiloparsec_meters, (orbital_velocities / 1000)./norm_OrbVel, (orbital_velocities_uncertainties / 1000)./max(orbital_velocities_uncertainties / 1000), (orbital_velocities_uncertainties / 1000)./max(orbital_velocities_uncertainties / 1000), orbital_radii_uncertainties / kiloparsec_meters, orbital_radii_uncertainties / kiloparsec_meters, 'b')
+errorbar(sun_orbital_radius / kiloparsec_meters, (sun_orbital_speed / 1000)./norm_OrbVel, 0, 0, sun_orbital_radius_uncertainty / kiloparsec_meters, sun_orbital_radius_uncertainty / kiloparsec_meters)
+
+%plot theoretical rotation curve
+% plot inside inner sphere
+plot(inner_radii / kiloparsec_meters, (galactic_rotational_velocity(inner_radii, galactic_mass * (inner_radii / max(inner_radii)).^3) / 1000)./norm_TheorVelInner, '-b');
+
+% plot outside inner sphere
+plot(outer_radii / kiloparsec_meters, (galactic_rotational_velocity(outer_radii, galactic_mass) / 1000)./norm_TheorVelOuter, '-b');
+
+% add labels
+title('Normalized Orbital Radius vs Orbital Velocity');
+xlabel('Orbital Radius (kpc)');
+ylabel('Orbital Velocity (km/s)');
+
+% add legend
+legend('HI Clouds', 'Sun');
+
+hold off;
