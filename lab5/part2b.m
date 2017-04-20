@@ -9,7 +9,7 @@ kiloparsec_meters = 3.086e+19;
 
 speed_of_light = 299792458; % meters per second
 emitted_frequency = 1420.406; % MHz
-emitted_frequency_uncertainty = 1; %need to decide on this
+emitted_frequency_uncertainty = 0.1; %need to decide on this
 
 sun_orbital_speed = 220000; % meters per second
 sun_orbital_radius = 7.4 * kiloparsec_meters; % meters
@@ -113,9 +113,11 @@ hold on;
 plot(orbital_radii / kiloparsec_meters, orbital_velocities / 1000, 'x');
 
 % add point for Sun
-plot(7.4, 220, 'o');
+plot(sun_orbital_radius / kiloparsec_meters, sun_orbital_speed / 1000, 'o');
 
-%errorbar(x,y,yneg,ypos,xneg,xpos)
+%add error bars
+errorbar(orbital_radii / kiloparsec_meters, orbital_velocities / 1000, orbital_velocities_uncertainties / 1000, orbital_velocities_uncertainties / 1000, orbital_radii_uncertainties / kiloparsec_meters, orbital_radii_uncertainties / kiloparsec_meters, 'b')
+errorbar(sun_orbital_radius / kiloparsec_meters, sun_orbital_speed / 1000, 0, 0, sun_orbital_radius_uncertainty / kiloparsec_meters, sun_orbital_radius_uncertainty / kiloparsec_meters)
 
 % add labels
 title('Orbital Radius vs Orbital Velocity');
