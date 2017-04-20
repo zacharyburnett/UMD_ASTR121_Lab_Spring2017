@@ -9,7 +9,6 @@ kiloparsec_meters = 3.086e+19;
 
 speed_of_light = 299792458; % meters per second
 emitted_frequency = 1420.406; % MHz
-emitted_frequency_uncertainty = 0.1; %need to decide on this
 
 sun_orbital_speed = 220000; % meters per second
 sun_orbital_radius = 7.4 * kiloparsec_meters; % meters
@@ -55,7 +54,7 @@ tangential_velocities = ((emitted_frequency * 1000 - (left_tail_start_frequencie
 % propogation, also in the second term you have -(femit-fobs) when it 
 %should just be -femit 
 %the fix:
-tangential_velocities_uncertainties = sqrt((speed_of_light ./ (left_tail_start_frequencies * 1000)).^2 .* (emitted_frequency_uncertainty * 1000).^2 + (((emitted_frequency * 1000) ./ (left_tail_start_frequencies * 1000).^2) * speed_of_light).^2 .* (left_tail_start_frequencies_uncertainties * 1000).^2);
+tangential_velocities_uncertainties = sqrt((((emitted_frequency * 1000) ./ (left_tail_start_frequencies * 1000).^2) * speed_of_light).^2 .* (left_tail_start_frequencies_uncertainties * 1000).^2);
 
 
 % get orbital velocity from line of sight velocity and tangential velocity
