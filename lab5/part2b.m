@@ -119,6 +119,13 @@ plot(sun_orbital_radius / kiloparsec_meters, sun_orbital_speed / 1000, 'o');
 errorbar(orbital_radii / kiloparsec_meters, orbital_velocities / 1000, orbital_velocities_uncertainties / 1000, orbital_velocities_uncertainties / 1000, orbital_radii_uncertainties / kiloparsec_meters, orbital_radii_uncertainties / kiloparsec_meters, 'b')
 errorbar(sun_orbital_radius / kiloparsec_meters, sun_orbital_speed / 1000, 0, 0, sun_orbital_radius_uncertainty / kiloparsec_meters, sun_orbital_radius_uncertainty / kiloparsec_meters)
 
+%plot theoretical rotation curve
+% plot inside inner sphere
+plot(inner_radii / kiloparsec_meters, galactic_rotational_velocity(inner_radii, galactic_mass * (inner_radii / max(inner_radii)).^3) / 1000, '-b');
+
+% plot outside inner sphere
+plot(outer_radii / kiloparsec_meters, galactic_rotational_velocity(outer_radii, galactic_mass) / 1000, '-b');
+
 % add labels
 title('Orbital Radius vs Orbital Velocity');
 xlabel('Orbital Radius (kpc)');
