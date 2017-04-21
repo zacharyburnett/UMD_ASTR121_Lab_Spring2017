@@ -17,13 +17,13 @@ radii = linspace(0, galactic_radius, 1000);
 hold on
 
 % plot constant mass (point mass)
-plot(radii / kiloparsec_meters, galactic_rotational_velocity(radii, galactic_mass) / 1000);
+plot(radii / kiloparsec_meters, orbital_velocity(radii, galactic_mass) / 1000);
 
 % plot mass proportional to radius
-plot(radii / kiloparsec_meters, galactic_rotational_velocity(radii, galactic_mass * (radii / galactic_radius)) / 1000);
+plot(radii / kiloparsec_meters, orbital_velocity(radii, galactic_mass * (radii / galactic_radius)) / 1000);
 
 % plot mass proportional to radius cubed
-plot(radii / kiloparsec_meters, galactic_rotational_velocity(radii, galactic_mass * (radii / galactic_radius).^3) / 1000);
+plot(radii / kiloparsec_meters, orbital_velocity(radii, galactic_mass * (radii / galactic_radius).^3) / 1000);
 
 % add labels
 title('Rotational Velocity vs Orbital Radius: Mass Proportionalities');
