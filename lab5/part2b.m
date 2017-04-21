@@ -7,6 +7,9 @@ galactic_longitudes_uncertainties = deg2rad(1);
 % define meters in a kiloparsec
 meters_in_kiloparsec = 3.086e+16 * 1000; % meters
 
+% define gravitational constant
+cavendish_constant = 6.67408e-11;
+
 speed_of_light = 299792458; % meters per second
 HI_emission_frequency = 1420.405752; % neutral hydrogen emission frequecy in MHz
 
@@ -138,7 +141,21 @@ orbital_radii_uncertainties = sqrt(...
 
 %% plot rotation curves
 
-%figure
+% from cftool with Bisquare remain fit
+%slope = [2.894e+04, 3.369e+04, 3.844e+04];
+%y_intercept = [2.484e+05, 2.575e+05, 2.529e+05];
+
+slope = 3.369e+04;
+y_intercept = 2.575e+05;
+
+mass_at_2_kpc = 1.7e10 * 1.989e30; %(slope / 1000 .* (2) + y_intercept / 1000)^2 * (2 * meters_in_kiloparsec) / cavendish_constant;
+
+masses = orbital_velocities.^2 .* orbital_radii / cavendish_constant;
+
+% create new figure
+figure
+
+% start plotting
 hold on;
 
 % plot calculated positions
@@ -147,12 +164,14 @@ errorbar(orbital_radii / meters_in_kiloparsec, orbital_velocities / 1000, orbita
 % add point for Sun
 errorbar(solar_orbital_radius / meters_in_kiloparsec, solar_orbital_velocity / 1000, solar_orbital_velocity_uncertainty / 1000, solar_orbital_velocity_uncertainty / 1000, solar_orbital_radius_uncertainty / meters_in_kiloparsec, solar_orbital_radius_uncertainty / meters_in_kiloparsec, 'o')
 
+%plot(2:8, (slope .* ((2*meters_in_kiloparsec):meters_in_kiloparsec:(8*meters_in_kiloparsec)) + y_intercept) / 1000)
+
 % plot theoretical rotation curve
 % plot inside inner sphere
-%plot(inner_radii / meters_in_kiloparsec, (galactic_rotational_velocity(inner_radii, mass_inside_two_kpc * (inner_radii / max(inner_radii)).^3) / 1000), 'b');
+plot(inner_radii / meters_in_kiloparsec, galactic_rotational_velocity(inner_radii, mass_at_2_kpc .* (inner_radii / max(inner_radii)).^3) / 1000, 'b');
 
 % plot outside inner sphere
-%plot(outer_radii / meters_in_kiloparsec, (galactic_rotational_velocity(outer_radii, mass_inside_two_kpc) / 1000), 'b');
+plot(outer_radii / meters_in_kiloparsec, galactic_rotational_velocity(outer_radii, mass_at_2_kpc) / 1000, 'b');
 
 % add labels
 title('Derived Rotation Curve');
