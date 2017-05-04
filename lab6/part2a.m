@@ -3,13 +3,12 @@
 
 % define wavelengths in angstroms
 wavelengths = 3650:2:7100;
-
-% get fieldnames (galaxy names)
-galaxy_names = fieldnames(galaxy_data_struct);
-
 calcium_ii_k_wavelength = 3933.7;
 calcium_ii_h_wavelength = 3968.5;
 hydrogen_alpha_wavelength = 6562.8;
+
+% get fieldnames (galaxy names)
+galaxy_names = fieldnames(galaxy_data_struct);
 
 % plot separately
 for index = 1:numel(galaxy_names)
