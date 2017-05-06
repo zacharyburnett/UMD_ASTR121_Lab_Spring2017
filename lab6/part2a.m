@@ -20,49 +20,6 @@ spectral_line_colors = jet(length(spectral_line_wavelengths));
 % create new tab group to contain plots as tabs
 tab_group = uitabgroup;
 
-% plot combined
-current_tab = uitab(tab_group, 'Title', 'Combined Plot');
-axes('Parent', current_tab);
-
-% plot all together
-hold on
-
-for current_galaxy_name_index = 1:numel(galaxy_names)
-    current_galaxy_name = galaxy_names{current_galaxy_name_index};
-    plot(wavelengths, galaxy_data_struct.(current_galaxy_name).data, 'color', data_colors(current_galaxy_name_index, :));
-end
-
-for current_wavelength_index = 1:length(spectral_line_wavelengths)
-    current_wavelength = spectral_line_wavelengths(current_wavelength_index);
-    line([current_wavelength current_wavelength], get(gca, 'YLim'), 'color', spectral_line_colors(current_wavelength_index, :), 'LineStyle', '--');
-end
-
-title('Combined Plot');
-legend([galaxy_names', spectral_line_names]);
-
-hold off
-
-% plot combined and normalized
-current_tab = uitab(tab_group, 'Title', 'Normalized Combined Plot');
-axes('Parent', current_tab);
-
-hold on
-
-for current_galaxy_name_index = 1:numel(galaxy_names)
-    current_galaxy_name = galaxy_names{current_galaxy_name_index};
-    plot(wavelengths, galaxy_data_struct.(current_galaxy_name).data / max(galaxy_data_struct.(current_galaxy_name).data), 'color', data_colors(current_galaxy_name_index, :));
-end
-
-for current_wavelength_index = 1:length(spectral_line_wavelengths)
-    current_wavelength = spectral_line_wavelengths(current_wavelength_index);
-    line([current_wavelength current_wavelength], get(gca, 'YLim'), 'color', spectral_line_colors(current_wavelength_index, :), 'LineStyle', '--');
-end
-
-title('Normalized Combined Plot');
-legend([galaxy_names', spectral_line_names]);
-
-hold off
-
 % plot separately
 for current_galaxy_name_index = 1:numel(galaxy_names)
     current_galaxy_name = galaxy_names{current_galaxy_name_index};
@@ -85,3 +42,45 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
     
     hold off
 end
+
+% plot combined
+current_tab = uitab(tab_group, 'Title', 'Combined Data');
+axes('Parent', current_tab);
+
+hold on
+
+for current_galaxy_name_index = 1:numel(galaxy_names)
+    current_galaxy_name = galaxy_names{current_galaxy_name_index};
+    plot(wavelengths, galaxy_data_struct.(current_galaxy_name).data, 'color', data_colors(current_galaxy_name_index, :));
+end
+
+for current_wavelength_index = 1:length(spectral_line_wavelengths)
+    current_wavelength = spectral_line_wavelengths(current_wavelength_index);
+    line([current_wavelength current_wavelength], get(gca, 'YLim'), 'color', spectral_line_colors(current_wavelength_index, :), 'LineStyle', '--');
+end
+
+title('Combined Data');
+legend([galaxy_names', spectral_line_names]);
+
+hold off
+
+% plot combined and normalized
+current_tab = uitab(tab_group, 'Title', 'Normalized Combined Data');
+axes('Parent', current_tab);
+
+hold on
+
+for current_galaxy_name_index = 1:numel(galaxy_names)
+    current_galaxy_name = galaxy_names{current_galaxy_name_index};
+    plot(wavelengths, galaxy_data_struct.(current_galaxy_name).data / max(galaxy_data_struct.(current_galaxy_name).data), 'color', data_colors(current_galaxy_name_index, :));
+end
+
+for current_wavelength_index = 1:length(spectral_line_wavelengths)
+    current_wavelength = spectral_line_wavelengths(current_wavelength_index);
+    line([current_wavelength current_wavelength], get(gca, 'YLim'), 'color', spectral_line_colors(current_wavelength_index, :), 'LineStyle', '--');
+end
+
+title('Normalized Combined Data');
+legend([galaxy_names', spectral_line_names]);
+
+hold off
