@@ -7,49 +7,57 @@
 wavelengths = 3650:2:7100;
 
 % define rest wavelengths of the first nine entries in the Balmer (Hydrogen) series, as well as of Calcium II (K and H)
-rest_wavelengths = [6562.8, 4861.3, 4340.5, 4101.7, 3970.1, 3968.5, 3933.7, 3889.1, 3645.6];
-rest_wavelengths_names = {'Balmer alpha', 'Balmer beta', 'Balmer gamma', 'Balmer delta', 'Balmer epsilon', 'Ca II H', 'Ca II K', 'Balmer zeta', 'Balmer eta'};
-rest_wavelength_property = ['emission', 'emission', 'emission', 'emission', 'emission', 'absorption', 'absorption', 'emission', 'emission'];
+spectral_line_wavelengths = [6562.8, 4861.3, 4340.5, 4101.7, 3970.1, 3968.5, 3933.7, 3889.1, 3645.6];
+spectral_line_names = {'Balmer alpha', 'Balmer beta', 'Balmer gamma', 'Balmer delta', 'Balmer epsilon', 'Ca II H', 'Ca II K', 'Balmer zeta', 'Balmer eta'};
+spectral_line_types = {'emission', 'emission', 'emission', 'emission', 'emission', 'absorption', 'absorption', 'emission', 'emission'};
+
+% define wavelengths to use
+selection = [1,6,7];
+
+% get selection
+selected_wavelengths = spectral_line_wavelengths(selection);
+selected_properties = spectral_line_types(selection);
+selected_names = spectral_line_names(selection);
 
 % get fieldnames (galaxy names)
 galaxy_names = fieldnames(galaxy_data_struct);
 
 % define plotting colors
-line_colors = winter(3);
-rainbow_colors = fliplr(jet(length(rest_wavelengths)));
+shift_colors = winter(1);
+spectral_line_colors = fliplr(jet(length(spectral_line_wavelengths)));
 
 % create new tab group to contain plots as tabs
 tab_group = uitabgroup;
 
+% define potential shifts to iterate over
+potential_shifts = 0:2:round((max(wavelengths) - selected_wavelengths(1)) / 3);
+
 % create array to hold calculated redshifts
-calculated_shifts = array2table(zeros(5, length(galaxy_names)), 'VariableNames', galaxy_names');
+calculated_shifts = array2table(zeros(length(potential_shifts), length(galaxy_names)), 'VariableNames', galaxy_names');
 
 % plot separately
-for galaxy_name_index = 1:numel(galaxy_names)
-    galaxy_name = galaxy_names(galaxy_name_index);
-    galaxy_name = galaxy_name{1};
+for current_galaxy_name_index = 1:numel(galaxy_names)
+    current_galaxy_name = galaxy_names{current_galaxy_name_index};
     
-    intensity_data = galaxy_data_struct.(galaxy_name).data;
+    intensity_data = galaxy_data_struct.(current_galaxy_name).data;
     
-    [~, local_maxima_indices] = findpeaks(intensity_data);
-    [~, local_minima_indices] = findpeaks(intensity_data * -1);
-    
-    potential_shifts = 0:2:round(max(wavelengths) - rest_wavelengths(1));
+    [~, local_maxima_wavelengths] = findpeaks(intensity_data, wavelengths, 'MinPeakProminence', 0.2);
+    [~, local_minima_wavelengths] = findpeaks(intensity_data * -1, wavelengths, 'MinPeakProminence', 0.2);
     
     residuals = zeros(length(potential_shifts), 9);
     
-    for potential_shift_index = 1:length(potential_shifts)
-        potential_shift = potential_shifts(potential_shift_index);
+    for current_potential_shift_index = 1:length(potential_shifts)
+        current_potential_shift = potential_shifts(current_potential_shift_index);
         
-        for rest_wavelength_index = 1:length(rest_wavelengths)
-            rest_wavelength = rest_wavelengths(rest_wavelength_index);
+        for current_spectral_line_index = 1:length(selected_wavelengths)
+            current_wavelength = selected_wavelengths(current_spectral_line_index);
             
-            if strcmp(rest_wavelength_property(rest_wavelength_index), 'emission')
-                [~, nearest_extrema_index] = min(abs((rest_wavelength + potential_shift) - wavelengths(local_maxima_indices)));
-                residuals(potential_shift_index, rest_wavelength_index) = wavelengths(local_maxima_indices(nearest_extrema_index)) - (rest_wavelength + potential_shift);
+            if strcmp(selected_properties(current_spectral_line_index), 'emission')
+                [~, nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_maxima_wavelengths));
+                residuals(current_potential_shift_index, current_spectral_line_index) = local_maxima_wavelengths(nearest_extrema_index) - (current_wavelength + current_potential_shift);
             else % else assume absorption
-                [~, nearest_extrema_index] = min(abs((rest_wavelength + potential_shift) - wavelengths(local_minima_indices)));
-                residuals(potential_shift_index, rest_wavelength_index) = wavelengths(local_minima_indices(nearest_extrema_index)) - (rest_wavelength + potential_shift);
+                [~, nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_minima_wavelengths));
+                residuals(current_potential_shift_index, current_spectral_line_index) = local_minima_wavelengths(nearest_extrema_index) - (current_wavelength + current_potential_shift);
             end
         end
     end
@@ -60,26 +68,27 @@ for galaxy_name_index = 1:numel(galaxy_names)
     
     sorted_shifts = potential_shifts(sorted_residual_sumsquares_indices);
     
-    calculated_shifts.(galaxy_name) = sorted_shifts(1:5)';
+    calculated_shifts.(current_galaxy_name) = sorted_shifts(1:end)';
     
-    current_tab = uitab(tab_group, 'Title', galaxy_name);
+    current_tab = uitab(tab_group, 'Title', current_galaxy_name);
     axes('Parent', current_tab);
     
     hold on
     
     plot(wavelengths, intensity_data, 'k');
       
-    for shift_index = 1:length(line_colors)
-        plot(wavelengths - sorted_shifts(shift_index), intensity_data, 'color', line_colors(shift_index, :));
+    for current_shift_index = 1:size(shift_colors, 1)
+        current_shift = sorted_shifts(current_shift_index);
+        plot(wavelengths - current_shift, intensity_data, 'color', shift_colors(current_shift_index, :));
     end
     
-    for rest_wavelength_index = 1:length(rest_wavelengths)
-        rest_wavelength = rest_wavelengths(rest_wavelength_index);
-        line([rest_wavelength rest_wavelength], get(gca, 'YLim'), 'color', rainbow_colors(rest_wavelength_index, :), 'LineStyle', '--');
+    for current_spectral_line_index = 1:length(spectral_line_wavelengths)
+        current_wavelength = spectral_line_wavelengths(current_spectral_line_index);
+        line([current_wavelength current_wavelength], get(gca, 'YLim'), 'color', spectral_line_colors(current_spectral_line_index, :), 'LineStyle', '--');
     end
     
-    title(galaxy_name);
-    legend([galaxy_name, strcat('shift:', {' '}, string(sorted_shifts(1:length(line_colors)))), rest_wavelengths_names]);
+    title(current_galaxy_name);
+    legend([current_galaxy_name, strcat('shift:', {' '}, string(sorted_shifts(1:size(shift_colors, 1)))), spectral_line_names]);
     
     hold off
 end
