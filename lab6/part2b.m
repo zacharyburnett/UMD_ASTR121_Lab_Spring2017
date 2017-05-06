@@ -1,106 +1,126 @@
-% Plot all spectra separately, with lines for each rest wavelength
+% Find Doppler shifts of each spectra based on fit to rest wavelengths
 
 % All wavelength info is the same for each.
 % intensity values are in the 'data' field of the struct
 
-% define range of wavelengths in angstroms
+% define wavelengths in angstroms
 wavelengths = 3650:2:7100;
+calcium_ii_k_angstroms = 3933.7; % valley
+calcium_ii_h_angstroms = 3968.5; % valley
 
-% define rest wavelengths of the first nine entries in the Balmer (Hydrogen) series, as well as of Calcium II (K and H)
-balmer_alpha_angstroms = 6562.8;
-balmer_beta_angstroms = 4861.3;
-balmer_gamma_angstroms = 4340.5;
-balmer_delta_angstroms = 4101.7;
-balmer_epsilon_angstroms = 3970.1;
-calcium_ii_h_angstroms = 3968.5;
-calcium_ii_k_angstroms = 3933.7;
-balmer_zeta_angstroms = 3889.1;
-balmer_eta_angstroms = 3645.6;
+balmer_alpha_angstroms = 6562.8; % peak
+balmer_beta_angstroms = 4861.3; % peak
+balmer_gamma_angstroms = 4340.5; % peak
+balmer_delta_angstroms = 4101.7; % in valley
+balmer_epsilon_angstroms = 3970.1; % in calcium ii H
+balmer_zeta_angstroms = 3889.1; % in valley
+balmer_eta_angstroms = 3645.6; % peak
 
 % get fieldnames (galaxy names)
 galaxy_names = fieldnames(galaxy_data_struct);
 
 % define plotting colors
-line_colors = winter(length(galaxy_names));
-rainbow_colors = jet(9);
+colors = lines(5);
 
-% create new tab group to contain plots as tabs
-tab_group = uitabgroup;
+% create array to hold calculated redshifts
+calculated_shifts = array2table(zeros(5, length(galaxy_names)), 'VariableNames', galaxy_names');
 
 % plot separately
 for galaxy_name_index = 1:numel(galaxy_names)
-    galaxy_name = galaxy_names{galaxy_name_index};
+    galaxy_name = galaxy_names(galaxy_name_index);
+    galaxy_name = galaxy_name{1};
+    
     intensity_data = galaxy_data_struct.(galaxy_name).data;
     
-    current_tab = uitab(tab_group, 'Title', galaxy_name);
-    axes('Parent', current_tab);
+    [~, local_maxima_indices] = findpeaks(intensity_data);
+    [~, local_minima_indices] = findpeaks(intensity_data * -1);
     
+    potential_shifts = 0:2:round(max(wavelengths) - balmer_alpha_angstroms - 1);
+    
+    residuals = zeros(length(potential_shifts), 9);
+    
+    for potential_shift_index = 1:length(potential_shifts)
+        potential_shift = potential_shifts(potential_shift_index);
+        
+        % for calcium II k wavelength
+        [~, nearest_valley_index] = min(abs((calcium_ii_k_angstroms + potential_shift) - wavelengths(local_minima_indices)));
+        residuals(potential_shift_index, 1) = wavelengths(local_minima_indices(nearest_valley_index)) - (balmer_alpha_angstroms + potential_shift);
+        
+        % for calcium II h wavelength (peak)
+        [~, nearest_valley_index] = min(abs((calcium_ii_h_angstroms + potential_shift) - wavelengths(local_minima_indices)));
+        residuals(potential_shift_index, 2) = wavelengths(local_minima_indices(nearest_valley_index)) - (balmer_alpha_angstroms + potential_shift);
+        
+        % for balmer alpha wavelength (peak)
+        [~, nearest_peak_index] = min(abs((balmer_alpha_angstroms + potential_shift) - wavelengths(local_maxima_indices)));
+        residuals(potential_shift_index, 3) = wavelengths(local_maxima_indices(nearest_peak_index)) - (balmer_alpha_angstroms + potential_shift);
+        
+        % for balmer beta wavelength (peak)
+        [~, nearest_peak_index] = min(abs((balmer_beta_angstroms + potential_shift) - wavelengths(local_maxima_indices)));
+        residuals(potential_shift_index, 4) = wavelengths(local_maxima_indices(nearest_peak_index)) - (balmer_beta_angstroms + potential_shift);
+
+        % for balmer gamma wavelength (peak)
+        [~, nearest_peak_index] = min(abs((balmer_gamma_angstroms + potential_shift) - wavelengths(local_maxima_indices)));
+        residuals(potential_shift_index, 5) = wavelengths(local_maxima_indices(nearest_peak_index)) - (balmer_gamma_angstroms + potential_shift);
+
+        % for balmer delta wavelength (valley)
+        [~, nearest_valley_index] = min(abs((balmer_delta_angstroms + potential_shift) - wavelengths(local_minima_indices)));
+        residuals(potential_shift_index, 6) = wavelengths(local_minima_indices(nearest_valley_index)) - (balmer_delta_angstroms + potential_shift);
+
+        % for balmer epsilon wavelength (calcium ii h valley)
+        [~, nearest_valley_index] = min(abs((balmer_epsilon_angstroms + potential_shift) - wavelengths(local_minima_indices)));
+        residuals(potential_shift_index, 7) = wavelengths(local_minima_indices(nearest_valley_index)) - (balmer_epsilon_angstroms + potential_shift);
+
+        % for balmer zeta wavelength (valley)
+        [~, nearest_valley_index] = min(abs((balmer_zeta_angstroms + potential_shift) - wavelengths(local_minima_indices)));
+        residuals(potential_shift_index, 8) = wavelengths(local_minima_indices(nearest_valley_index)) - (balmer_zeta_angstroms + potential_shift);
+
+        % for balmer eta wavelength (peak)
+        [~, nearest_peak_index] = min(abs((balmer_eta_angstroms + potential_shift) - wavelengths(local_maxima_indices)));
+        residuals(potential_shift_index, 9) = wavelengths(local_maxima_indices(nearest_peak_index)) - (balmer_eta_angstroms + potential_shift);
+        
+    end
+    
+    residual_sumsquares = sum(residuals.^2, 2);
+    
+    [~, sorted_residual_sumsquares_indices] = sort(residual_sumsquares);
+    
+    sorted_shifts = potential_shifts(sorted_residual_sumsquares_indices);
+    
+    figure
     hold on
     
-    plot(wavelengths, intensity_data, 'k');
+    for shift_index = 1:5
+        plot(wavelengths - sorted_shifts(shift_index), intensity_data, 'color', colors(shift_index, :));
+    end
     
-    line([balmer_alpha_angstroms balmer_alpha_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(9, :), 'LineStyle', '--');
-    line([balmer_beta_angstroms balmer_beta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(8, :), 'LineStyle', '--');
-    line([balmer_gamma_angstroms balmer_gamma_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(7, :), 'LineStyle', '--');
-    line([balmer_delta_angstroms balmer_delta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(6, :), 'LineStyle', '--');
-    line([balmer_epsilon_angstroms balmer_epsilon_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(5, :), 'LineStyle', '--');
-    line([calcium_ii_h_angstroms calcium_ii_h_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(4, :), 'LineStyle', '--');
-    line([calcium_ii_k_angstroms calcium_ii_k_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(3, :), 'LineStyle', '--');
-    line([balmer_zeta_angstroms balmer_zeta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(2, :), 'LineStyle', '--');
-    line([balmer_eta_angstroms balmer_eta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(1, :), 'LineStyle', '--');
+    line([calcium_ii_k_angstroms calcium_ii_k_angstroms], get(gca, 'YLim'), 'color', 'b');
+    line([calcium_ii_h_angstroms calcium_ii_h_angstroms], get(gca, 'YLim'), 'color', 'g');
+    
+    line([balmer_alpha_angstroms balmer_alpha_angstroms], get(gca, 'YLim'), 'color', 'r');
+    line([balmer_beta_angstroms balmer_beta_angstroms], get(gca, 'YLim'), 'color', 'r');
+    line([balmer_gamma_angstroms balmer_gamma_angstroms], get(gca, 'YLim'), 'color', 'r');
+    line([balmer_delta_angstroms balmer_delta_angstroms], get(gca, 'YLim'), 'color', 'r');
+    line([balmer_epsilon_angstroms balmer_epsilon_angstroms], get(gca, 'YLim'), 'color', 'r');
+    line([balmer_zeta_angstroms balmer_zeta_angstroms], get(gca, 'YLim'), 'color', 'r');
+    line([balmer_eta_angstroms balmer_eta_angstroms], get(gca, 'YLim'), 'color', 'r');
+    
+    %for shift_index = 1:5
+    %    line([calcium_ii_k_angstroms + sorted_shifts(shift_index) calcium_ii_k_angstroms + sorted_shifts(shift_index)], get(gca, 'YLim'), 'LineStyle', '--', 'color', colors(shift_index, :));
+    %end
+    
+    %for shift_index = 1:5
+    %    line([calcium_ii_h_angstroms + sorted_shifts(shift_index) calcium_ii_h_angstroms + sorted_shifts(shift_index)], get(gca, 'YLim'), 'LineStyle', '-.', 'color', colors(shift_index, :));
+    %end
+    
+    %for shift_index = 1:5
+    %    line([balmer_alpha_angstroms + sorted_shifts(shift_index) balmer_alpha_angstroms + sorted_shifts(shift_index)], get(gca, 'YLim'), 'LineStyle', ':', 'color', colors(shift_index, :));
+    %end
     
     title(galaxy_name);
-    legend(galaxy_name, 'Balmer alpha', 'Balmer beta', 'Balmer gamma', 'Balmer delta', 'Balmer epsilon', 'Ca II H', 'Ca II K', 'Balmer zeta', 'Balmer eta');
+    legend(string(1:5));
+    %legend(galaxy_name, 'Ca II K', 'Ca II H', 'Balmer series');%, strcat('Ca II K shifted ', string(1:5)), strcat('Ca II H shifted ', string(1:5)), strcat('H Alpha shifted ', string(1:5))])
     
     hold off
+    
+    calculated_shifts.(galaxy_name) = sorted_shifts(1:5)';
 end
-
-current_tab = uitab(tab_group, 'Title', 'Combined Plot');
-axes('Parent', current_tab);
-
-% plot all together
-hold on
-
-for galaxy_name_index = 1:numel(galaxy_names)
-    plot(wavelengths, galaxy_data_struct.(galaxy_names{galaxy_name_index}).data, 'color', line_colors(galaxy_name_index, :));
-end
-
-line([balmer_alpha_angstroms balmer_alpha_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(9, :), 'LineStyle', '--');
-line([balmer_beta_angstroms balmer_beta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(8, :), 'LineStyle', '--');
-line([balmer_gamma_angstroms balmer_gamma_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(7, :), 'LineStyle', '--');
-line([balmer_delta_angstroms balmer_delta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(6, :), 'LineStyle', '--');
-line([balmer_epsilon_angstroms balmer_epsilon_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(5, :), 'LineStyle', '--');
-line([calcium_ii_h_angstroms calcium_ii_h_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(4, :), 'LineStyle', '--');
-line([calcium_ii_k_angstroms calcium_ii_k_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(3, :), 'LineStyle', '--');
-line([balmer_zeta_angstroms balmer_zeta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(2, :), 'LineStyle', '--');
-line([balmer_eta_angstroms balmer_eta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(1, :), 'LineStyle', '--');
-
-title('Combined Plot');
-legend([galaxy_names', 'Balmer alpha', 'Balmer beta', 'Balmer gamma', 'Balmer delta', 'Balmer epsilon', 'Ca II H', 'Ca II K', 'Balmer zeta', 'Balmer eta']);
-
-hold off
-
-current_tab = uitab(tab_group, 'Title', 'Normalized Combined Plot');
-axes('Parent', current_tab);
-
-% plot all together
-hold on
-
-for galaxy_name_index = 1:numel(galaxy_names)
-    plot(wavelengths, galaxy_data_struct.(galaxy_names{galaxy_name_index}).data / max(galaxy_data_struct.(galaxy_names{galaxy_name_index}).data), 'color', line_colors(galaxy_name_index, :));
-end
-
-line([balmer_alpha_angstroms balmer_alpha_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(9, :), 'LineStyle', '--');
-line([balmer_beta_angstroms balmer_beta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(8, :), 'LineStyle', '--');
-line([balmer_gamma_angstroms balmer_gamma_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(7, :), 'LineStyle', '--');
-line([balmer_delta_angstroms balmer_delta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(6, :), 'LineStyle', '--');
-line([balmer_epsilon_angstroms balmer_epsilon_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(5, :), 'LineStyle', '--');
-line([calcium_ii_h_angstroms calcium_ii_h_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(4, :), 'LineStyle', '--');
-line([calcium_ii_k_angstroms calcium_ii_k_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(3, :), 'LineStyle', '--');
-line([balmer_zeta_angstroms balmer_zeta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(2, :), 'LineStyle', '--');
-line([balmer_eta_angstroms balmer_eta_angstroms], get(gca, 'YLim'), 'color', rainbow_colors(1, :), 'LineStyle', '--');
-
-title('Normalized Combined Plot');
-legend([galaxy_names', 'Balmer alpha', 'Balmer beta', 'Balmer gamma', 'Balmer delta', 'Balmer epsilon', 'Ca II H', 'Ca II K', 'Balmer zeta', 'Balmer eta']);
-
-hold off
