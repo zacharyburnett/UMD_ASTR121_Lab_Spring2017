@@ -52,7 +52,7 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
         
         for current_spectral_line_index = 1:length(selection)
             current_wavelength = selected_wavelengths(current_spectral_line_index);
-                        
+            
             if strcmp(selected_properties(current_spectral_line_index), 'emission')
                 [~, nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_maxima_wavelengths));
                 residuals(current_potential_shift_index, current_spectral_line_index) = local_maxima_wavelengths(nearest_extrema_index) - (current_wavelength + current_potential_shift);
