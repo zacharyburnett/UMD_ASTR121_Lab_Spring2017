@@ -42,7 +42,7 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
     
     intensity_data = galaxy_data_struct.(current_galaxy_name).data;
     
-    [~, local_maxima_wavelengths] = findpeaks(intensity_data, wavelengths, 'MinPeakProminence', 0.2);
+    [~, local_maxima_wavelengths] = findpeaks(intensity_data, wavelengths, 'MinPeakProminence', 0.45);
     [~, local_minima_wavelengths] = findpeaks(intensity_data * -1, wavelengths, 'MinPeakProminence', 0.2);
     
     residuals = zeros(length(potential_shifts), length(selection));
