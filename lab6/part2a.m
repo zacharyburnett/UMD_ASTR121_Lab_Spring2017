@@ -6,9 +6,9 @@
 % define range of wavelengths in angstroms
 wavelengths = 3650:2:7100;
 
-% define rest wavelengths of the first nine entries in the Balmer (Hydrogen) series, as well as of Calcium II (K and H)
-spectral_line_wavelengths = [6562.8, 4861.3, 4340.5, 4101.7, 3970.1, 3968.5, 3933.7, 3889.1, 3645.6];
-spectral_line_names = {'Balmer alpha', 'Balmer beta', 'Balmer gamma', 'Balmer delta', 'Balmer epsilon', 'Ca II H', 'Ca II K', 'Balmer zeta', 'Balmer eta'};
+% define rest wavelengths of the first nine entries in the Balmer (Hydrogen) series, as well as of Calcium II (K and H) and Sulfur
+spectral_line_names = {'Balmer alpha', 'Sulfur 1', 'Sulfur 2', 'Balmer beta', 'Balmer gamma', 'Balmer delta', 'Balmer epsilon', 'Ca II H', 'Ca II K', 'Balmer zeta', 'Balmer eta'};
+spectral_line_types = {'emission', 'emission', 'emission', 'emission', 'emission', 'emission', 'emission', 'absorption', 'absorption', 'emission', 'emission'};
 
 % get fieldnames (galaxy names)
 galaxy_names = fieldnames(galaxy_data_struct);

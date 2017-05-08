@@ -6,13 +6,13 @@
 % define range of wavelengths in angstroms
 wavelengths = 3650:2:7100;
 
-% define rest wavelengths of the first nine entries in the Balmer (Hydrogen) series, as well as of Calcium II (K and H)
-spectral_line_wavelengths = [6562.8, 4861.3, 4340.5, 4101.7, 3970.1, 3968.5, 3933.7, 3889.1, 3645.6];
-spectral_line_names = {'Balmer alpha', 'Balmer beta', 'Balmer gamma', 'Balmer delta', 'Balmer epsilon', 'Ca II H', 'Ca II K', 'Balmer zeta', 'Balmer eta'};
-spectral_line_types = {'emission', 'emission', 'emission', 'emission', 'emission', 'absorption', 'absorption', 'emission', 'emission'};
+% define rest wavelengths of the first nine entries in the Balmer (Hydrogen) series, as well as of Calcium II (K and H) and Sulfur
+spectral_line_wavelengths = [6562.8, 6731, 6717, 4861.3, 4340.5, 4101.7, 3970.1, 3968.5, 3933.7, 3889.1, 3645.6];
+spectral_line_names = {'Balmer alpha', 'Sulfur 1', 'Sulfur 2', 'Balmer beta', 'Balmer gamma', 'Balmer delta', 'Balmer epsilon', 'Ca II H', 'Ca II K', 'Balmer zeta', 'Balmer eta'};
+spectral_line_types = {'emission', 'emission', 'emission', 'emission', 'emission', 'emission', 'emission', 'absorption', 'absorption', 'emission', 'emission'};
 
 % specify selected spectral lines
-selection = [1,6,7];
+selection = [1,8,9];
 
 % get selection
 selected_wavelengths = spectral_line_wavelengths(selection);
@@ -42,8 +42,8 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
     
     intensity_data = galaxy_data_struct.(current_galaxy_name).data;
     
-    [~, local_maxima_wavelengths] = findpeaks(intensity_data, wavelengths, 'MinPeakProminence', 0.45);
-    [~, local_minima_wavelengths] = findpeaks(intensity_data * -1, wavelengths, 'MinPeakProminence', 0.2);
+    [~, local_maxima_wavelengths, ~, local_maxima_prominences] = findpeaks(intensity_data, wavelengths, 'MinPeakProminence', 0.4);
+    [~, local_minima_wavelengths, ~, local_minima_prominences] = findpeaks(intensity_data * -1, wavelengths, 'MinPeakProminence', 0.3);
     
     residuals = zeros(length(potential_shifts), length(selection));
     
@@ -54,10 +54,10 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
             current_wavelength = selected_wavelengths(current_spectral_line_index);
             
             if strcmp(selected_properties(current_spectral_line_index), 'emission')
-                [~, nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_maxima_wavelengths));
+                [~, nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_maxima_wavelengths) ./ local_maxima_prominences');
                 residuals(current_potential_shift_index, current_spectral_line_index) = local_maxima_wavelengths(nearest_extrema_index) - (current_wavelength + current_potential_shift);
             else % else assume absorption
-                [~, nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_minima_wavelengths));
+                [~, nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_minima_wavelengths) ./ local_minima_prominences');
                 residuals(current_potential_shift_index, current_spectral_line_index) = local_minima_wavelengths(nearest_extrema_index) - (current_wavelength + current_potential_shift);
             end
         end
