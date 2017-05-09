@@ -10,7 +10,7 @@ wavelengths = 3650:2:7100;
 % define rest wavelengths of the first nine entries in the Balmer (Hydrogen) series, as well as of Calcium II (K and H) and Sulfur
 spectral_lines = table([6730.815; 6716.726; 6584; 6562.79; 6548; 4861.35; 4340.472; 4101.734; 3970.075; 3968.5; 3933.7; 3889.064], ...
     {'emission'; 'emission'; 'emission'; 'emission'; 'emission'; 'emission'; 'emission'; 'emission'; 'emission'; 'absorption'; 'absorption'; 'emission'}, ...
-    'VariableNames', {'wavelength', 'type'}, ...
+    'VariableNames', {'Wavelength_A', 'Type'}, ...
     'RowNames', {'SII1'; 'SII2'; 'NII1'; 'H\alpha'; 'NII2'; 'H\beta'; 'H\gamma'; 'H\delta'; 'H\epsilon'; 'CaIIH'; 'CaIIK'; 'H\zeta'});
 
 % specify selected spectral lines (previous selection: [1:2,4:7,10:11])
@@ -25,7 +25,7 @@ peak_width_weight = 0;
 valley_width_weight = 1;
 
 % define range of potential Doppler shifts
-potential_shifts = 0:2:round((max(wavelengths) - max(spectral_lines.wavelength)));
+potential_shifts = 0:2:round((max(wavelengths) - max(selected_spectral_lines.Wavelength_A)));
 
 % get fieldnames (galaxy names)
 galaxy_names = fieldnames(galaxy_data_struct);
@@ -39,7 +39,7 @@ tab_group = uitabgroup;
 
 % create array to hold calculated redshifts
 doppler_shifts = array2table(zeros(length(galaxy_names), 3), ...
-    'VariableNames', {'Shift_A'; 'Weighted_Uncertainty_A'; 'Unweighted_Uncertainty_A'}, ...
+    'VariableNames', {'Shift_A'; 'Weighted_Residual_A'; 'Unweighted_Residual_A'}, ...
     'RowNames', galaxy_names);
 
 spectral_line_weighted_residuals = array2table(zeros(height(doppler_shifts), height(selected_spectral_lines)), ...
@@ -71,10 +71,10 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
         
         % iterate over spectral lines
         for current_spectral_line_index = 1:height(selected_spectral_lines)
-            current_wavelength = selected_spectral_lines.wavelength(current_spectral_line_index);
+            current_wavelength = selected_spectral_lines.Wavelength_A(current_spectral_line_index);
             
             % check if emission line
-            if strcmp(selected_spectral_lines.type(current_spectral_line_index), 'emission')
+            if strcmp(selected_spectral_lines.Type(current_spectral_line_index), 'emission')
                 current_weights = (local_maxima_prominences').^peak_prominence_weight ...
                     ./ (local_maxima_widths).^peak_width_weight ...
                     ./ abs(local_maxima_intensities' - mean(current_intensity_data)).^peak_intensity_weight;
@@ -115,8 +115,8 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
     
     % populate current row of Doppler shift table
     doppler_shifts.Shift_A(current_galaxy_name) = potential_shifts(least_sum_of_squares_index);
-    doppler_shifts.Weighted_Uncertainty_A(current_galaxy_name) = mean(abs(weighted_residuals(least_sum_of_squares_index)));
-    doppler_shifts.Unweighted_Uncertainty_A(current_galaxy_name) = mean(abs(unweighted_residuals(least_sum_of_squares_index)));
+    doppler_shifts.Weighted_Residual_A(current_galaxy_name) = mean(abs(weighted_residuals(least_sum_of_squares_index)));
+    doppler_shifts.Unweighted_Residual_A(current_galaxy_name) = mean(abs(unweighted_residuals(least_sum_of_squares_index)));
     
     % populate spectral line tables
     spectral_line_unweighted_residuals{current_galaxy_name_index, :} = unweighted_residuals(least_sum_of_squares_index, :);
@@ -137,7 +137,7 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
     
     % draw selected spectral lines
     for current_spectral_line_index = 1:height(selected_spectral_lines)
-        current_wavelength = selected_spectral_lines.wavelength(current_spectral_line_index);
+        current_wavelength = selected_spectral_lines.Wavelength_A(current_spectral_line_index);
         line([current_wavelength current_wavelength], get(gca, 'YLim'), 'color', spectral_line_colors(current_spectral_line_index, :), 'LineStyle', '--');
     end
     
@@ -167,14 +167,14 @@ end
 
 % draw selected spectral lines
 for current_wavelength_index = 1:height(selected_spectral_lines)
-    current_wavelength = selected_spectral_lines.wavelength(current_wavelength_index);
+    current_wavelength = selected_spectral_lines.Wavelength_A(current_wavelength_index);
     line([current_wavelength current_wavelength], get(gca, 'YLim'), 'color', spectral_line_colors(current_wavelength_index, :), 'LineStyle', '--');
 end
 
 % add title and legend
 title('Combined Shifted Data');
-legend([strcat(galaxy_names', {': w '}, string(doppler_shifts.Weighted_Uncertainty_A'), {' '}, char(197), ...
-    {': u '}, string(doppler_shifts.Unweighted_Uncertainty_A'), {' '}, char(197)), ...
+legend([strcat(galaxy_names', {': w '}, string(doppler_shifts.Weighted_Residual_A'), {' '}, char(197), ...
+    {': u '}, string(doppler_shifts.Unweighted_Residual_A'), {' '}, char(197)), ...
     strcat(selected_spectral_lines.Properties.RowNames', ... 
     {': w '}, string(mean(table2array(spectral_line_weighted_residuals), 1)), {' '}, char(197), ... 
     {': u '}, string(mean(table2array(spectral_line_unweighted_residuals), 1)), {' '}, char(197))]);
