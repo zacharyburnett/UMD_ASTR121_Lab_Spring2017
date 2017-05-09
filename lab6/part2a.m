@@ -1,8 +1,5 @@
 % Plot all spectra separately, with lines for each rest wavelength
 
-% All wavelength info is the same for each.
-% intensity values are in the 'data' field of the struct
-
 % define range of wavelengths in angstroms
 wavelengths = 3650:2:7100;
 
