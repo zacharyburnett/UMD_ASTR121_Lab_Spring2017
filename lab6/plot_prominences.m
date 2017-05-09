@@ -21,6 +21,6 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
     [pks, locs, ~, prom] = findpeaks(-1 * intensity_data, wavelengths, 'MinPeakProminence', 0.1);
     
     for index = 1:length(prom)
-        text(locs(index) + 0.02, -pks(index), {string(round(prom(index), 2) * 10)})
+        text(locs(index) + 0.02, -pks(index), {string(round(prom(index), 3) * 10)})
     end
 end
