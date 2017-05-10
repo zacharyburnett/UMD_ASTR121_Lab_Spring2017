@@ -14,7 +14,7 @@ spectral_lines = table([6730.815; 6716.726; 6584; 6562.79; 6548; 4861.35; 4340.4
     'RowNames', {'SII1'; 'SII2'; 'NII1'; 'H\alpha'; 'NII2'; 'H\beta'; 'H\gamma'; 'H\delta'; 'H\epsilon'; 'CaIIH'; 'CaIIK'; 'H\zeta'});
 
 % specify selected spectral lines. Best selection is "spectral_lines([1:2,4:7,10:11], :)"
-selected_spectral_lines = spectral_lines([1:2,3:4,6:7,10:11], :);
+selected_spectral_lines = spectral_lines([4,10,11], :);
 
 % define weights assigned to priminence, intensity, and width of peaks and valleys
 peak_prominence_weight = 1;
@@ -37,11 +37,12 @@ data_colors = winter(length(galaxy_names));
 % create new tab group to contain plots as tabs
 tab_group = uitabgroup;
 
-% create array to hold calculated redshifts
+% create table to hold calculated redshifts
 doppler_shifts = array2table(zeros(length(galaxy_names), 3), ...
     'VariableNames', {'Shift_A'; 'Unweighted_Residual_A'; 'Weighted_Residual_A'}, ...
     'RowNames', galaxy_names');
 
+% create table to hold weighted and unweighted residuals
 spectral_line_weighted_residuals = array2table(zeros(height(doppler_shifts), height(selected_spectral_lines)), ...
     'VariableNames', strrep(selected_spectral_lines.Properties.RowNames, '\', '_'), ...
     'RowNames', galaxy_names');
