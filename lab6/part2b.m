@@ -158,6 +158,29 @@ for current_galaxy_name_index = 1:length(galaxy_names)
     hold off
 end
 
+% plot combined
+current_tab = uitab(tab_group, 'Title', 'Combined Unshifted Data');
+axes('Parent', current_tab);
+
+hold on
+
+for current_galaxy_name_index = 1:length(galaxy_names)
+    current_galaxy_name = galaxy_names{current_galaxy_name_index};
+    plot(wavelengths, galaxy_data_struct.(current_galaxy_name).data, 'color', data_colors(current_galaxy_name_index, :));
+end
+
+for current_spectral_line_index = 1:height(selected_spectral_lines)
+    current_wavelength = selected_spectral_lines.Wavelength_A(current_spectral_line_index);
+    line([current_wavelength current_wavelength], get(gca, 'YLim'), 'color', spectral_line_colors(round((current_wavelength - min(wavelengths)) / range(wavelengths) * length(spectral_line_colors)), :), 'LineStyle', '--');
+end
+
+title('Combined Unshifted Data');
+legend([galaxy_names, selected_spectral_lines.Properties.RowNames']);
+xlabel('Wavelength (Angstroms)');
+ylabel('Intensity');
+    
+hold off
+
 % add new tab to figure window
 current_tab = uitab(tab_group, 'Title', 'Combined Shifted Data');
 axes('Parent', current_tab);
