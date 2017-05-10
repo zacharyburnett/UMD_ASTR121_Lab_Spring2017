@@ -13,10 +13,10 @@ spectral_lines = table([6730.815; 6716.726; 6584; 6562.79; 6548; 4861.35; 4340.4
     'VariableNames', {'Wavelength_A', 'Type'}, ...
     'RowNames', {'SII1'; 'SII2'; 'NII1'; 'H\alpha'; 'NII2'; 'H\beta'; 'H\gamma'; 'H\delta'; 'H\epsilon'; 'CaIIH'; 'CaIIK'; 'H\zeta'});
 
-% specify selected spectral lines (previous selection: [1:2,4:7,10:11])
-selected_spectral_lines = spectral_lines;
+% specify selected spectral lines. Best selection is "spectral_lines([1:2,4:7,10:11], :)"
+selected_spectral_lines = spectral_lines([1:2,3:4,6:7,10:11], :);
 
-% define aggressiveness of seeking prominence and intensity
+% define weights assigned to priminence, intensity, and width of peaks and valleys
 peak_prominence_weight = 1;
 valley_prominence_weight = 3;
 peak_intensity_weight = 0;
@@ -28,7 +28,7 @@ valley_width_weight = 1;
 potential_shifts = 0:2:round((max(wavelengths) - max(selected_spectral_lines.Wavelength_A)));
 
 % get fieldnames (galaxy names)
-galaxy_names = fieldnames(galaxy_data_struct);
+galaxy_names = fieldnames(galaxy_data_struct)';
 
 % define plotting colors
 spectral_line_colors = fliplr(jet(height(selected_spectral_lines)));
@@ -39,19 +39,19 @@ tab_group = uitabgroup;
 
 % create array to hold calculated redshifts
 doppler_shifts = array2table(zeros(length(galaxy_names), 3), ...
-    'VariableNames', {'Shift_A'; 'Weighted_Residual_A'; 'Unweighted_Residual_A'}, ...
-    'RowNames', galaxy_names);
+    'VariableNames', {'Shift_A'; 'Unweighted_Residual_A'; 'Weighted_Residual_A'}, ...
+    'RowNames', galaxy_names');
 
 spectral_line_weighted_residuals = array2table(zeros(height(doppler_shifts), height(selected_spectral_lines)), ...
     'VariableNames', strrep(selected_spectral_lines.Properties.RowNames, '\', '_'), ...
-    'RowNames', galaxy_names);
+    'RowNames', galaxy_names');
 
 spectral_line_unweighted_residuals = array2table(zeros(height(doppler_shifts), height(selected_spectral_lines)), ...
     'VariableNames', strrep(selected_spectral_lines.Properties.RowNames, '\', '_'), ...
-    'RowNames', galaxy_names);
+    'RowNames', galaxy_names');
 
 % plot separately
-for current_galaxy_name_index = 1:numel(galaxy_names)
+for current_galaxy_name_index = 1:length(galaxy_names)
     current_galaxy_name = galaxy_names{current_galaxy_name_index};
     
     current_intensity_data = galaxy_data_struct.(current_galaxy_name).data;
@@ -115,8 +115,8 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
     
     % populate current row of Doppler shift table
     doppler_shifts.Shift_A(current_galaxy_name) = potential_shifts(least_sum_of_squares_index);
-    doppler_shifts.Weighted_Residual_A(current_galaxy_name) = mean(abs(weighted_residuals(least_sum_of_squares_index)));
-    doppler_shifts.Unweighted_Residual_A(current_galaxy_name) = mean(abs(unweighted_residuals(least_sum_of_squares_index)));
+    doppler_shifts.Unweighted_Residual_A(current_galaxy_name) = mean(abs(unweighted_residuals(least_sum_of_squares_index, :)));
+    doppler_shifts.Weighted_Residual_A(current_galaxy_name) = mean(abs(weighted_residuals(least_sum_of_squares_index, :)));
     
     % populate spectral line tables
     spectral_line_unweighted_residuals{current_galaxy_name_index, :} = unweighted_residuals(least_sum_of_squares_index, :);
@@ -135,19 +135,26 @@ for current_galaxy_name_index = 1:numel(galaxy_names)
     % plot shifted intensity data
     plot(wavelengths - doppler_shifts.Shift_A(current_galaxy_name), current_intensity_data, 'color', 'b');
     
+    % create array for spectral line legend entries
+    spectral_line_legend_entries = strings(1, height(selected_spectral_lines));
+    
     % draw selected spectral lines
     for current_spectral_line_index = 1:height(selected_spectral_lines)
         current_wavelength = selected_spectral_lines.Wavelength_A(current_spectral_line_index);
+        current_spectral_line_name = selected_spectral_lines.Properties.RowNames{current_spectral_line_index};
         line([current_wavelength current_wavelength], get(gca, 'YLim'), 'color', spectral_line_colors(current_spectral_line_index, :), 'LineStyle', '--');
+        
+        spectral_line_legend_entries(current_spectral_line_index) = sprintf('%-5s %+10.3f \x212B', ... 
+            current_spectral_line_name, ... 
+            spectral_line_unweighted_residuals.(strrep(current_spectral_line_name, '\', '_'))(current_galaxy_name));
     end
+    
     
     % add title and legend
     title(current_galaxy_name);
-    legend([strcat({'best fit shift: '}, string(doppler_shifts.Shift_A(current_galaxy_name)), {' '}, char(197)), ...
-        strcat(selected_spectral_lines.Properties.RowNames', ...
-        {': w '}, string(weighted_residuals(current_galaxy_name_index, :)), {' '}, char(197), ...
-        {': u '}, string(unweighted_residuals(current_galaxy_name_index, :)), {' '}, char(197))]);
-    
+    legend_object = legend([strcat({'best fit shift: '}, string(doppler_shifts.Shift_A(current_galaxy_name)), {' '}, char(197)), ...
+        spectral_line_legend_entries]);
+        
     % end plotting
     hold off
 end
@@ -160,7 +167,7 @@ axes('Parent', current_tab);
 hold on
 
 % plot each galaxy's shifted intensity data
-for current_galaxy_name_index = 1:numel(galaxy_names)
+for current_galaxy_name_index = 1:length(galaxy_names)
     current_galaxy_name = galaxy_names{current_galaxy_name_index};
     plot(wavelengths - doppler_shifts.Shift_A(current_galaxy_name), galaxy_data_struct.(current_galaxy_name).data, 'color', data_colors(current_galaxy_name_index, :));
 end
@@ -171,13 +178,20 @@ for current_wavelength_index = 1:height(selected_spectral_lines)
     line([current_wavelength current_wavelength], get(gca, 'YLim'), 'color', spectral_line_colors(current_wavelength_index, :), 'LineStyle', '--');
 end
 
+% create array for galaxy legend entries
+galaxy_legend_entries = strings(1, length(galaxy_names));
+
+% populate galaxy legend entries
+for galaxy_name_index = 1:length(galaxy_names)
+    galaxy_legend_entries(galaxy_name_index) = sprintf('%7s \t %.2d \x00B1 %-3.2g \x212B', ... 
+        galaxy_names{galaxy_name_index}, ... 
+        doppler_shifts.Shift_A(galaxy_name_index), ... 
+        abs(doppler_shifts.Weighted_Residual_A(galaxy_name_index)));
+end
+
 % add title and legend
 title('Combined Shifted Data');
-legend([strcat(galaxy_names', {': w '}, string(doppler_shifts.Weighted_Residual_A'), {' '}, char(197), ...
-    {': u '}, string(doppler_shifts.Unweighted_Residual_A'), {' '}, char(197)), ...
-    strcat(selected_spectral_lines.Properties.RowNames', ... 
-    {': w '}, string(mean(table2array(spectral_line_weighted_residuals), 1)), {' '}, char(197), ... 
-    {': u '}, string(mean(table2array(spectral_line_unweighted_residuals), 1)), {' '}, char(197))]);
+legend([galaxy_legend_entries, selected_spectral_lines.Properties.RowNames']);
 
 % end plotting combined data
 hold off
