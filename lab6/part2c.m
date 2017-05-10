@@ -6,7 +6,7 @@ galactic_radial_velocities = array2table(zeros(length(galaxy_names), 6), ...
     'VariableNames', {'Distance_Mpc', 'Uncertainty_Mpc', 'Velocity_c', 'Uncertainty_c', 'Velocity_m_s', 'Uncertainty_m_s'}, ... 
     'RowNames', galaxy_names);
 galactic_radial_velocities.Distance_Mpc = [24.864, 20.390, 24.830, 8.070, 3.907, 3.651, 39.613, 10.781, 9.464, 26.100, 16.275, 7.196, 13.247, 31.638, 19.400]';
-galactic_radial_velocities.Uncertainty_Mpc = [5.757, 6.562, 5.214, 1.956, 0.687, 0.555, 8.947, 1.566, 1.971, 0, 7.316, 2.114, 4.271, 5.306, 3.267]';
+galactic_radial_velocities.Uncertainty_Mpc = [5.757, 6.562, 5.214, 1.956, 0.687, 0.555, 8.947, 1.566, 1.971, 3.9635, 7.316, 2.114, 4.271, 5.306, 3.267]';
 
 % iterate over galaxies to populate radial velocities
 for galaxy_name_index = 1:length(galaxy_names)
@@ -31,6 +31,8 @@ end
 
 [~, min_chi_squared_index] = min(chi_squared);
 hubble_constant_best_fit = sample_constants(min_chi_squared_index);
+
+%[hubble_constant_best_fit, b, sigma_a, sigma_b] = york_fit(galactic_radial_velocities.Distance_Mpc', galactic_radial_velocities.Velocity_m_s', galactic_radial_velocities.Uncertainty_Mpc', galactic_radial_velocities.Uncertainty_m_s');
 
 hold on
 
