@@ -123,6 +123,8 @@ for current_galaxy_name_index = 1:length(galaxy_names)
     spectral_line_unweighted_residuals{current_galaxy_name_index, :} = unweighted_residuals(least_sum_of_squares_index, :);
     spectral_line_weighted_residuals{current_galaxy_name_index, :} = weighted_residuals(least_sum_of_squares_index, :);
     
+    doppler_shifts.Shift_A(current_galaxy_name) = doppler_shifts.Shift_A(current_galaxy_name) + mean(doppler_shifts.Weighted_Residual_A(current_galaxy_name));
+    
     % add new tab to figure window
     current_tab = uitab(tab_group, 'Title', current_galaxy_name);
     axes('Parent', current_tab);
