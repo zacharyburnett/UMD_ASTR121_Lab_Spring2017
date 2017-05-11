@@ -4,7 +4,6 @@
 wavelengths = 3650:2:7100;
 
 % wavelengths from http://physics.nist.gov/PhysRefData/ASD/lines_form.html
-
 % sulfur and nitrogen found at https://en.wikipedia.org/wiki/Forbidden_mechanism
 
 % define rest wavelengths of the first nine entries in the Balmer (Hydrogen) series, as well as of Calcium II (K and H) and Sulfur
@@ -207,7 +206,7 @@ galaxy_legend_entries = strings(1, length(galaxy_names));
 
 % populate galaxy legend entries
 for galaxy_name_index = 1:length(galaxy_names)
-    galaxy_legend_entries(galaxy_name_index) = sprintf('%7s \t %2d \x00B1 %-3.2g \x212B', ... 
+    galaxy_legend_entries(galaxy_name_index) = sprintf('%7s \t %4.3g \x00B1 %-3.2g \x212B', ... 
         galaxy_names{galaxy_name_index}, ... 
         doppler_shifts.Shift_A(galaxy_name_index), ... 
         abs(doppler_shifts.Weighted_Residual_A(galaxy_name_index)));

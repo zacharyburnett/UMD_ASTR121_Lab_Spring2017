@@ -1,5 +1,4 @@
 speed_of_light = 299792458; % meters per second
-hubble_constant = 67.7; % km/s/Mpc
 
 % create table for radial velocities
 galactic_radial_velocities = array2table(zeros(length(galaxy_names), 6), ... 
@@ -31,27 +30,29 @@ root_sum_squared_deviation_per_degree_freedom_naught = sqrt(sum((y - hubble_cons
 
 hubble_constant_best_fit_uncertainty = root_sum_squared_deviation_per_degree_freedom_naught / sqrt(sum(x.^2 ./ err.^2));
 
+hubble_time = 1 / (hubble_constant_best_fit / 1000 / 30856776000000000000);
+hubble_time_uncertainty = sqrt((-(1 / hubble_constant_best_fit^2))^2 * hubble_constant_best_fit_uncertainty^2);
+
 hold on
 
 % plot data with errorbars
-errorbar(galactic_radial_velocities.Distance_Mpc, galactic_radial_velocities.Velocity_m_s, galactic_radial_velocities.Uncertainty_m_s, galactic_radial_velocities.Uncertainty_m_s, galactic_radial_velocities.Uncertainty_Mpc, galactic_radial_velocities.Uncertainty_Mpc, 'o');
+errorbar(galactic_radial_velocities.Distance_Mpc, galactic_radial_velocities.Velocity_m_s / 1000, galactic_radial_velocities.Uncertainty_m_s / 1000, galactic_radial_velocities.Uncertainty_m_s / 1000, galactic_radial_velocities.Uncertainty_Mpc, galactic_radial_velocities.Uncertainty_Mpc, 'o');
 
 % plot Hubble's constant from Planck
-line(galactic_radial_velocities.Distance_Mpc, (hubble_constant * 1000) * galactic_radial_velocities.Distance_Mpc, 'color', 'r', 'LineStyle', '-');
+%line(galactic_radial_velocities.Distance_Mpc, (hubble_constant * 1000) * galactic_radial_velocities.Distance_Mpc, 'color', 'r', 'LineStyle', '-');
 
 % plot constant found through data
-plot(galactic_radial_velocities.Distance_Mpc, hubble_constant_best_fit * galactic_radial_velocities.Distance_Mpc, '-b');
-plot(galactic_radial_velocities.Distance_Mpc, (hubble_constant_best_fit + hubble_constant_best_fit_uncertainty) * galactic_radial_velocities.Distance_Mpc, ':b');
-plot(galactic_radial_velocities.Distance_Mpc, (hubble_constant_best_fit - hubble_constant_best_fit_uncertainty) * galactic_radial_velocities.Distance_Mpc, ':b');
+plot(galactic_radial_velocities.Distance_Mpc, hubble_constant_best_fit * galactic_radial_velocities.Distance_Mpc / 1000, '-r');
+plot(galactic_radial_velocities.Distance_Mpc, (hubble_constant_best_fit + hubble_constant_best_fit_uncertainty) * galactic_radial_velocities.Distance_Mpc / 1000, ':b');
+plot(galactic_radial_velocities.Distance_Mpc, (hubble_constant_best_fit - hubble_constant_best_fit_uncertainty) * galactic_radial_velocities.Distance_Mpc / 1000, ':b');
 
 % plot zeroline
-line(get(gca, 'XLim'), [0 0], 'color', 'k', 'LineStyle', '--');
+%line(get(gca, 'XLim'), [0 0], 'color', 'k', 'LineStyle', '--');
 
-title('Galactic Radial Velocity vs Distance');
+title('Galactic Recessional Velocity vs Distance');
 xlabel('Distance (Mpc)');
-ylabel('Velocity (m/s)');
+ylabel('Recessional Velocity (km/s)');
 
-legend('NED datapoints', ... 
-    sprintf('H = %.4g    (Planck)     km/s/Mpc', hubble_constant), ... 
-    sprintf('H = %.4g \x00B1 %f km/s/Mpc', hubble_constant_best_fit / 1000, hubble_constant_best_fit_uncertainty / 1000));
+legend('NED datapoints', sprintf('H = %.4g \x00B1 %f km/s/Mpc', hubble_constant_best_fit / 1000, hubble_constant_best_fit_uncertainty / 1000), ... 
+    'range of uncertainty');
 hold off
