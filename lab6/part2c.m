@@ -12,7 +12,7 @@ for galaxy_name_index = 1:length(galaxy_names)
     current_galaxy_name = galaxy_names{galaxy_name_index};
     
     galactic_radial_velocities.Velocity_c(current_galaxy_name) = mean(doppler_shifts.Shift_A(current_galaxy_name) ./ spectral_lines.Wavelength_A);
-    galactic_radial_velocities.Uncertainty_c(current_galaxy_name) = mean(sqrt((1 ./ spectral_lines.Wavelength_A).^2 .* (doppler_shifts.Weighted_Residual_A(current_galaxy_name)).^2));
+    galactic_radial_velocities.Uncertainty_c(current_galaxy_name) = mean(sqrt((1 ./ spectral_lines.Wavelength_A).^2 .* (doppler_shifts.Unweighted_Residual_A(current_galaxy_name)).^2));
     
     galactic_radial_velocities.Velocity_m_s(current_galaxy_name) = galactic_radial_velocities.Velocity_c(current_galaxy_name) * speed_of_light;
     galactic_radial_velocities.Uncertainty_m_s(current_galaxy_name) = galactic_radial_velocities.Uncertainty_c(current_galaxy_name) * speed_of_light;
