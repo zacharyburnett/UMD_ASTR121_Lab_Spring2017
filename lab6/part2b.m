@@ -24,7 +24,7 @@ peak_width_weight = 0;
 valley_width_weight = 1;
 
 % define range of potential Doppler shifts
-potential_shifts = 0:2:round((max(wavelengths) - max(selected_spectral_lines.Wavelength_A)));
+potential_shifts = 0:2:(max(wavelengths) - max(selected_spectral_lines.Wavelength_A));
 
 % get fieldnames (galaxy names)
 galaxy_names = fieldnames(galaxy_data_struct)';
@@ -76,9 +76,9 @@ for current_galaxy_name_index = 1:length(galaxy_names)
             % check if emission line
             if strcmp(selected_spectral_lines.Type(current_spectral_line_index), 'emission')
                 current_weights = (local_maxima_prominences').^peak_prominence_weight ...
-                    ./ (local_maxima_widths).^peak_width_weight ...
-                    ./ abs(local_maxima_intensities' - mean(current_intensity_data)).^peak_intensity_weight;
-                
+                    ./ ((local_maxima_widths).^peak_width_weight) ...
+                    ./ (abs(local_maxima_intensities' - mean(current_intensity_data)).^peak_intensity_weight);
+                                
                 % get the index of the nearest local maximum (weighted and unweighted)
                 [~, weighted_nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_maxima_wavelengths) ./ current_weights);
                 [~, unweighted_nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_maxima_wavelengths));
@@ -91,9 +91,9 @@ for current_galaxy_name_index = 1:length(galaxy_names)
                 unweighted_residuals(current_potential_shift_index, current_spectral_line_index) = ((current_wavelength + current_potential_shift) - local_maxima_wavelengths(unweighted_nearest_extrema_index));
             else % else assume absorption
                 current_weights = (local_minima_prominences').^valley_prominence_weight ...
-                    ./ (local_minima_widths).^valley_width_weight ...
-                    ./ abs(local_minima_intensities' - mean(current_intensity_data)).^valley_intensity_weight;
-                
+                    ./ ((local_minima_widths).^valley_width_weight) ...
+                    ./ (abs(local_minima_intensities' - mean(current_intensity_data)).^valley_intensity_weight);
+                                
                 % get the index of the nearest local minimum (weighted and unweighted)
                 [~, weighted_nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_minima_wavelengths) ./ current_weights);
                 [~, unweighted_nearest_extrema_index] = min(abs((current_wavelength + current_potential_shift) - local_minima_wavelengths));
